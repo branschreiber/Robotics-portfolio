@@ -163,6 +163,39 @@ footer{padding:28px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 <div class="panel"><h3>Contact details</h3><p class="editable" contenteditable="true">Team email: add a public contact email<br>Instagram / YouTube: add your team links</p><a class="btn primary" href="mailto:">Email the team ↗</a><p class="edit-note">Set a real email address in the mailto link in the HTML source.</p></div></div></div></section>
 </main>
 <footer><div class="wrap footer-inner"><span>© <span id="year"></span> TOTAL CHAOS · FTC 24621</span><span>Engineered with curiosity <span style="color:var(--gold)">✦</span> Powered by teamwork</span><button class="mini-btn" id="saveBtn">Save portfolio HTML ↓</button></div></footer>
+
+
+<button class="admin-launch" id="adminLaunch" type="button">⚙ Admin</button>
+<aside class="admin-panel" id="adminPanel" aria-label="Portfolio admin panel">
+  <div id="adminLogin">
+    <h3>Portfolio admin</h3>
+    <p>Enter the site passcode to unlock editing tools.</p>
+    <label for="adminPassword" style="font-size:11px;color:#d7e9de">Admin passcode</label>
+    <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter passcode">
+    <button id="adminUnlock" type="button" style="width:100%;background:#ffc928;color:#17210b">Unlock editor</button>
+    <p class="admin-status" id="adminLoginStatus" role="status"></p>
+    <p><strong>Security note:</strong> This is a client-side gate, not secure authentication. Anyone who can inspect the HTML can discover or bypass it. Do not use a real account password here.</p>
+  </div>
+  <div id="adminTools" class="admin-hidden">
+    <h3>Editor tools</h3>
+    <p>Click text to edit it. Click an item to select it, then delete or add content.</p>
+    <div class="admin-actions">
+      <button id="toggleEdit" type="button">Turn editing off</button>
+      <button id="addSection" type="button">＋ Add section</button>
+      <button id="addCard" type="button">＋ Add content card</button>
+      <button id="addPhoto" type="button">＋ Add photo slot</button>
+      <button id="addMember" type="button">＋ Add member</button>
+      <button id="addSponsor" type="button">＋ Add sponsor</button>
+      <button id="deleteSelected" class="danger" type="button">✕ Delete selected</button>
+      <button id="adminSave" type="button">↓ Export HTML</button>
+      <button id="adminLock" type="button">Lock editor</button>
+      <button id="adminClose" type="button">Close panel</button>
+    </div>
+    <p class="admin-status" id="adminStatus" role="status">Editor unlocked.</p>
+    <p>Export downloads a new standalone HTML copy. Keep a backup before deleting sections.</p>
+  </div>
+</aside>
+
 <script>
 document.getElementById('year').textContent=new Date().getFullYear();
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.08});
@@ -291,37 +324,5 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
 })();
 
 </script>
-
-<button class="admin-launch" id="adminLaunch" type="button">⚙ Admin</button>
-<aside class="admin-panel" id="adminPanel" aria-label="Portfolio admin panel">
-  <div id="adminLogin">
-    <h3>Portfolio admin</h3>
-    <p>Enter the site passcode to unlock editing tools.</p>
-    <label for="adminPassword" style="font-size:11px;color:#d7e9de">Admin passcode</label>
-    <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter passcode">
-    <button id="adminUnlock" type="button" style="width:100%;background:#ffc928;color:#17210b">Unlock editor</button>
-    <p class="admin-status" id="adminLoginStatus" role="status"></p>
-    <p><strong>Security note:</strong> This is a client-side gate, not secure authentication. Anyone who can inspect the HTML can discover or bypass it. Do not use a real account password here.</p>
-  </div>
-  <div id="adminTools" class="admin-hidden">
-    <h3>Editor tools</h3>
-    <p>Click text to edit it. Click an item to select it, then delete or add content.</p>
-    <div class="admin-actions">
-      <button id="toggleEdit" type="button">Turn editing off</button>
-      <button id="addSection" type="button">＋ Add section</button>
-      <button id="addCard" type="button">＋ Add content card</button>
-      <button id="addPhoto" type="button">＋ Add photo slot</button>
-      <button id="addMember" type="button">＋ Add member</button>
-      <button id="addSponsor" type="button">＋ Add sponsor</button>
-      <button id="deleteSelected" class="danger" type="button">✕ Delete selected</button>
-      <button id="adminSave" type="button">↓ Export HTML</button>
-      <button id="adminLock" type="button">Lock editor</button>
-      <button id="adminClose" type="button">Close panel</button>
-    </div>
-    <p class="admin-status" id="adminStatus" role="status">Editor unlocked.</p>
-    <p>Export downloads a new standalone HTML copy. Keep a backup before deleting sections.</p>
-  </div>
-</aside>
-
 </body>
 </html>
