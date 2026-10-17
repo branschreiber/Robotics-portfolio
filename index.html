@@ -89,6 +89,11 @@ footer{padding:28px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 
 /* Public visitors cannot edit page content; admin unlock enables it. */
 body:not(.admin-editing) [contenteditable="true"]{ -webkit-user-modify: read-only; }
+
+/* FTCScout live data panel */
+.live-stats{margin:22px 0 30px;padding:clamp(16px,3vw,26px);border:1px solid rgba(182,255,216,.18);border-radius:20px;background:linear-gradient(135deg,rgba(16,43,32,.94),rgba(8,22,17,.96));box-shadow:0 18px 55px rgba(0,0,0,.18)}
+.live-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}.live-top h3{font-size:clamp(20px,3vw,28px);margin:4px 0}.live-top p{margin:4px 0;color:var(--muted);font-size:13px}.live-refresh{border:1px solid rgba(255,201,40,.5);border-radius:999px;background:rgba(255,201,40,.09);color:var(--gold);font:800 12px inherit;padding:10px 14px;cursor:pointer}.live-refresh:disabled{opacity:.6;cursor:wait}.live-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}.live-metric{padding:15px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(182,255,216,.12);min-width:0}.live-metric span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}.live-metric strong{display:block;font-size:clamp(21px,3vw,31px);margin-top:7px;color:var(--gold);overflow-wrap:anywhere}.live-subhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 10px}.live-subhead h4{margin:0;font-size:16px}.live-table-wrap{overflow-x:auto;border:1px solid rgba(182,255,216,.12);border-radius:12px}.live-table-wrap table{min-width:540px;width:100%}.live-table-wrap th,.live-table-wrap td{padding:11px 12px;text-align:left;border-bottom:1px solid rgba(182,255,216,.09);font-size:12px}.live-table-wrap th{color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.live-state{font-size:12px;color:var(--muted);margin:10px 0 0}.live-state.error{color:#ffb1a8}.live-source{color:var(--muted);font-size:11px;margin-top:13px}.live-source a{color:var(--gold)}
+@media(max-width:650px){.live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.live-top{align-items:stretch}.live-refresh{align-self:flex-start}}
 </style>
 </head>
 <body>
@@ -131,6 +136,21 @@ body:not(.admin-editing) [contenteditable="true"]{ -webkit-user-modify: read-onl
  <article class="card"><div class="icon">⬡</div><h3 contenteditable="true" class="editable">Award name</h3><p contenteditable="true" class="editable">Event / season — share what judges recognized about your team.</p><span class="tag">ADD YOUR RESULT</span></article>
 </div></div></section>
 <section id="matches"><div class="wrap"><div class="section-head reveal"><div><div class="kicker">Competition log / 04</div><h2>Match by match.</h2></div><p>Keep results transparent and use the table to track improvement across qualification and elimination matches.</p></div>
+<div class="live-stats reveal" id="ftcscout-live" aria-live="polite">
+ <div class="live-top"><div><div class="kicker">Live data / FTCScout API</div><h3>Team 24621 · Live season stats</h3><p id="liveSeasonLabel">Loading current season data…</p></div><button class="live-refresh" id="liveRefresh" type="button">↻ Refresh stats</button></div>
+ <div class="live-grid">
+  <div class="live-metric"><span>Record (W–L–T)</span><strong id="liveRecord">—</strong></div>
+  <div class="live-metric"><span>Events</span><strong id="liveEvents">—</strong></div>
+  <div class="live-metric"><span>Matches</span><strong id="liveMatches">—</strong></div>
+  <div class="live-metric"><span>Best OPR</span><strong id="liveOpr">—</strong></div>
+ </div>
+ <div class="live-subhead"><h4>Season events</h4><span class="tag" id="liveUpdated">Connecting…</span></div>
+ <div class="live-table-wrap"><table><thead><tr><th>Event</th><th>Record</th><th>Rank</th><th>Matches</th></tr></thead><tbody id="liveEventsBody"><tr><td colspan="4">Fetching FTCScout data…</td></tr></tbody></table></div>
+ <div class="live-subhead"><h4>Latest match results</h4><span class="tag">FTCScout feed</span></div>
+ <div class="live-table-wrap"><table><thead><tr><th>Event</th><th>Match</th><th>Alliance</th><th>Score</th><th>Result</th></tr></thead><tbody id="liveMatchesBody"><tr><td colspan="5">Fetching match history…</td></tr></tbody></table></div>
+ <p class="live-state" id="liveStatus">Connecting to FTCScout…</p>
+ <p class="live-source">Data supplied by the <a href="https://ftcscout.mmathijs.nl/" target="_blank" rel="noopener">FTCScout statistics service</a>. Automatically refreshes every 5 minutes. Data availability depends on FTCScout’s coverage and current-season event results.</p>
+</div>
 <div class="table-wrap reveal"><table><thead><tr><th>Event</th><th>Match</th><th>Alliance</th><th>Score</th><th>Result</th><th>Notes</th></tr></thead><tbody>
 <tr><td contenteditable="true">Event name</td><td contenteditable="true">Q-01</td><td contenteditable="true">—</td><td contenteditable="true">—</td><td class="pending" contenteditable="true">Add result</td><td contenteditable="true">Autonomous / tele-op notes</td></tr>
 <tr><td contenteditable="true">Event name</td><td contenteditable="true">Q-02</td><td contenteditable="true">—</td><td contenteditable="true">—</td><td class="pending" contenteditable="true">Add result</td><td contenteditable="true">What worked? What changed?</td></tr>
@@ -224,6 +244,45 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
  const blob=new Blob(['<!DOCTYPE html>\\n'+clone.outerHTML],{type:'text/html;charset=utf-8'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='total-chaos-ftc-24621-portfolio.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
+
+
+// FTCScout live stats: public REST API, no API key required. Refresh periodically and degrade gracefully.
+(function(){
+ const API='https://ftcscout-api.mmathijs.nl/rest/v1';
+ const TEAM=24621;
+ const season=new Date().getFullYear();
+ const $=id=>document.getElementById(id);
+ const num=v=>Number.isFinite(Number(v))?Number(v):null;
+ const first=(obj,keys)=>{for(const k of keys){if(obj&&obj[k]!==undefined&&obj[k]!==null&&obj[k]!=='')return obj[k]}return null};
+ const arr=v=>Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items:[]);
+ const fmt=v=>{const n=num(v);return n===null?'—':Number.isInteger(n)?String(n):n.toFixed(2)};
+ const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function get(path){const r=await fetch(API+path,{headers:{'Accept':'application/json'},cache:'no-store'});if(!r.ok)throw new Error('FTCScout returned HTTP '+r.status+' for '+path);return r.json()}
+ function recordFrom(x){const w=num(first(x,['wins','winCount','qualWins','winsCount']))??0,l=num(first(x,['losses','lossCount','qualLosses','lossesCount']))??0,t=num(first(x,['ties','tieCount','qualTies','tiesCount']))??0;return `${w}–${l}–${t}`}
+ function eventName(x){const e=first(x,['event','name','eventName','event_name']);return typeof e==='object'&&e?first(e,['name','eventName','code'])||'Event':e||'Event'}
+ function eventCode(x){const e=x&&x.event;return first(x,['eventCode','code'])||(e&&first(e,['code','eventCode']))||''}
+ function scoreOf(x){const v=first(x,['score','teamScore','totalPoints','points','scoreTotal']);if(v!==null)return fmt(v);const s=x&&x.scores;if(s&&typeof s==='object'){const own=first(s,['team','total','score','red','blue']);if(own!==null)return fmt(own)}return '—'}
+ function renderEvents(data){const list=arr(data);$('liveEvents').textContent=list.length?String(list.length):'0';if(!list.length){$('liveEventsBody').innerHTML='<tr><td colspan="4">No event data returned for this season yet.</td></tr>';return}
+  $('liveEventsBody').innerHTML=list.map(x=>{const name=eventName(x),stats=x.stats||x;const rec=first(stats,['record','matchRecord']);const rank=first(stats,['rank','ranking','eventRank']);const matches=first(stats,['matchesPlayed','matchCount','matches','playedMatches']);return `<tr><td>${esc(name)}</td><td>${esc(rec&&typeof rec==='string'?rec:recordFrom(stats))}</td><td>${esc(rank===null?'—':rank)}</td><td>${esc(Array.isArray(matches)?matches.length:(matches??'—'))}</td></tr>`}).join('');
+ }
+ function renderMatches(data){const list=arr(data).slice().sort((a,b)=>String(first(b,['startTime','scheduledTime','date','timestamp','matchId'])||'').localeCompare(String(first(a,['startTime','scheduledTime','date','timestamp','matchId'])||''))).slice(0,8);$('liveMatches').textContent=String(arr(data).length);if(!list.length){$('liveMatchesBody').innerHTML='<tr><td colspan="5">No match results returned yet.</td></tr>';return}
+  $('liveMatchesBody').innerHTML=list.map(m=>{const event=eventName(m),id=first(m,['matchName','name','matchNumber','matchId','id'])||'Match';let alliance=first(m,['alliance','teamAlliance','color']);if(!alliance&&m.team&&typeof m.team==='object')alliance=first(m.team,['alliance','color']);const score=scoreOf(m);let result=first(m,['result','outcome','status']);if(!result){const won=first(m,['won','isWin']);result=won===true?'Win':won===false?'Loss':'—'}return `<tr><td>${esc(event)}</td><td>${esc(id)}</td><td>${esc(alliance||'—')}</td><td>${esc(score)}</td><td>${esc(result)}</td></tr>`}).join('');
+ }
+ async function refresh(){const btn=$('liveRefresh');btn.disabled=true;$('liveStatus').classList.remove('error');$('liveStatus').textContent='Refreshing from FTCScout…';$('liveSeasonLabel').textContent=`Season ${season} · FTC team ${TEAM}`;
+  try{const results=await Promise.allSettled([get(`/teams/${TEAM}/quick-stats?season=${season}`),get(`/teams/${TEAM}/events/${season}`),get(`/teams/${TEAM}/matches?season=${season}`)]);
+   const [quick,events,matches]=results;
+   if(quick.status==='fulfilled'){const q=quick.value||{};const record=first(q,['record','matchRecord']);$('liveRecord').textContent=record&&typeof record==='string'?record:recordFrom(q);const opr=first(q,['opr','totalOPR','npOPR','npOpr','totalOpr','bestOPR','bestOpr']);$('liveOpr').textContent=fmt(opr);const matchCount=first(q,['matchesPlayed','matchCount','matches']);if(matchCount!==null&&!Array.isArray(matchCount))$('liveMatches').textContent=fmt(matchCount);}
+   else { $('liveRecord').textContent='—';$('liveOpr').textContent='—'; }
+   if(events.status==='fulfilled')renderEvents(events.value);else {$('liveEventsBody').innerHTML='<tr><td colspan="4">Event stats unavailable right now.</td></tr>';$('liveEvents').textContent='—'}
+   if(matches.status==='fulfilled')renderMatches(matches.value);else {$('liveMatchesBody').innerHTML='<tr><td colspan="5">Match history unavailable right now.</td></tr>';$('liveMatches').textContent='—'}
+   const failures=results.filter(r=>r.status==='rejected');$('liveUpdated').textContent='Updated '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+   if(failures.length===3)throw failures[0].reason;
+   $('liveStatus').textContent=failures.length?`${failures.length} data feed(s) could not load. Other available data is shown; try refreshing.`:'Live data loaded. Last checked '+new Date().toLocaleString()+'.';
+  }catch(err){$('liveStatus').classList.add('error');$('liveStatus').textContent='Could not load live stats. FTCScout may be temporarily unavailable or block browser requests. '+(err&&err.message?err.message:'Please try again.');$('liveUpdated').textContent='Unavailable';}
+  finally{btn.disabled=false;}
+ }
+ $('liveRefresh').addEventListener('click',refresh);refresh();setInterval(refresh,300000);
+})();
 
 // Simple client-side admin tools. This is a convenience gate, NOT secure authentication.
 (function(){
