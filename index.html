@@ -211,16 +211,26 @@ body:not(.admin-editing) [contenteditable="true"]{ -webkit-user-modify: read-onl
       <button id="addMember" type="button">＋ Add member</button>
       <button id="addSponsor" type="button">＋ Add sponsor</button>
       <button id="deleteSelected" class="danger" type="button">✕ Delete selected</button>
+      <button id="adminPersist" type="button">✓ Save Changes</button>
       <button id="adminSave" type="button">↓ Export HTML</button>
       <button id="adminLock" type="button">Lock editor</button>
       <button id="adminClose" type="button">Close panel</button>
     </div>
     <p class="admin-status" id="adminStatus" role="status">Editor unlocked.</p>
+    <p id="persistNote">Save Changes remembers your edits and uploaded photos in this browser after refresh. Use Export HTML to download a copy. This button does not publish changes to GitHub for other visitors.</p>
     <p>Export downloads a new standalone HTML copy. Keep a backup before deleting sections.</p>
   </div>
 </aside>
 
 <script>
+// Restore locally saved portfolio content before wiring page interactions.
+(function(){
+ try {
+  const saved=localStorage.getItem('totalChaosPortfolioMainV1');
+  const main=document.querySelector('main');
+  if(saved && main) main.innerHTML=saved;
+ } catch(err) { console.warn('Could not restore saved portfolio edits.',err); }
+})();
 document.getElementById('year').textContent=new Date().getFullYear();
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
@@ -363,6 +373,17 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
    if(!selected){say('Select a section, card, photo, member, sponsor, or other item first.');return}
    if(selected.tagName==='SECTION' && selected.parentElement.tagName==='MAIN' && !confirm('Delete this entire section and all its contents?'))return;
    const doomed=selected;clearSelection();doomed.remove();say('Selected item deleted.');
+ });
+ document.getElementById('adminPersist').addEventListener('click',()=>{
+   if(!unlocked){say('Unlock the admin panel before saving.');return}
+   try {
+     const main=document.querySelector('main');
+     if(!main) throw new Error('Could not find page content.');
+     localStorage.setItem('totalChaosPortfolioMainV1',main.innerHTML);
+     say('Saved on this browser. Your edits and photos will remain after refresh on this device.');
+   } catch(err) {
+     say('Save failed. Browser storage may be full, especially if photos are large. Try smaller photos or Export HTML.');
+   }
  });
  document.getElementById('adminSave').addEventListener('click',()=>{
    const clone=document.documentElement.cloneNode(true);
